@@ -5,7 +5,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const app = express();
 const Campground = require("./models/campground");
-const catchAsync = require("./utils/catchAysnc");
+const catchAsync = require("./utils/catchAsync");
 
 mongoose.connect("mongodb://localhost:27017/yelp-camp");
 const db = mongoose.connection;
