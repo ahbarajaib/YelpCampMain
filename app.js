@@ -5,6 +5,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const app = express();
 const Campground = require("./models/campground");
+const Review = require("./models/review");
 const catchAsync = require("./utils/catchAsync");
 const ExpressError = require("./utils/ExpressError");
 const { campgroundSchema } = require("./schemas.js");
@@ -101,7 +102,12 @@ app.delete(
 app.post(
   "/campgrounds/:id/reviews",
   catchAsync(async (req, res) => {
-    res.send("You made it");
+    const campground = await Campground.findById(req.params.id);
+    const review = new Review(req.body.review);
+    campground.reviews.push(review);
+    await review.save();
+    await campground.save();
+    res.redirect(`/campground/${campground._id}`);
   })
 );
 
