@@ -26,6 +26,7 @@ router.post(
     campground.reviews.push(review);
     await review.save();
     await campground.save();
+
     res.redirect(`/campgrounds/${campground._id}`);
   })
 );
