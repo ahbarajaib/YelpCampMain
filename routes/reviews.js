@@ -3,7 +3,7 @@ const router = express.Router({ mergeParams: true });
 const catchAsync = require("../utils/catchAsync");
 const ExpressError = require("../utils/ExpressError");
 const Campground = require("../models/campground");
-const review = require("../models/review");
+const Review = require("../models/review");
 
 const { reviewSchema } = require("../schemas.js");
 
@@ -25,6 +25,7 @@ router.post(
     const review = new Review(req.body.review);
     campground.reviews.push(review);
     await review.save();
+    req.flash("success", "review created successfully");
     await campground.save();
 
     res.redirect(`/campgrounds/${campground._id}`);
