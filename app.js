@@ -11,9 +11,13 @@ const Review = require("./models/review");
 const ExpressError = require("./utils/ExpressError");
 const { campgroundSchema, reviewSchema } = require("./schemas.js");
 const review = require("./models/review");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user");
 
 const campgrounds = require("./routes/campgrounds");
 const reviews = require("./routes/reviews");
+
 //validateCampground Middleware for Joi validation
 
 mongoose.connect("mongodb://localhost:27017/yelp-camp");
@@ -23,6 +27,11 @@ db.once("open", () => {
   console.log("Database connected");
 });
 
+app.use((req, res, next) => {
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
+  next();
+});
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -43,11 +52,11 @@ const sessionConfig = {
 app.use(session(sessionConfig));
 
 app.use(flash());
-
-app.use((req, res, next) => {
-  res.locals.success = req.flash("success");
-  next();
-});
+app.use(passport.initialize);
+app.use(passport.session);
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 app.use("/campgrounds", campgrounds);
 app.use("/campgrounds/:id/reviews", reviews);
